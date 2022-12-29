@@ -1,13 +1,43 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import NotFound from '@/views/NotFound.vue'
+import Main from '@/views/main.vue'
 
 const routes = [
-  { path: "/login", name: "logIn", component: () => import("@/views/logIn.vue") },
-  { path: "/", name: "Home", component: () => import("@/views/auth/Home.vue") },
-  { path: "/:pathMatch(.*)", name: "notFound", component: () => import("@/views/notFound.vue") }
+  {
+    path: "/",
+    name: "root",
+    redirect: "login"
+  },
+  {
+    path: "/login",
+    name: "login",
+    component: () => import("@/views/logIn.vue")
+  },
+  {
+    path: "/users/setting",
+    name: "setting",
+    component: () => import("@/views/setting.vue")
+  },
+  {
+    path: "/main",
+    name: "main",
+    component: Main
+  },
+  {
+    path: "/users/absence",
+    name: "absence",
+    component: () => import("@/views/absence.vue")
+  },
+  {
+    path: "/:pathMatch(.*)",
+    name: "not-found",
+    component: NotFound
+  }
 ]
 
 const router = createRouter({
-  history: createWebHistory(),
+  linkExactActiveClass: 'active',
+  history: createWebHistory('/attendance-chaser'),
   routes
 })
 
