@@ -39,7 +39,6 @@
   const workStartDate = computed(date => {
     return dayjs(date).format('YYYY/MM/DD')
   })
-  console.log(props.user)
 
 
 </script>

@@ -10,8 +10,8 @@
         <userProfile :user="user"></userProfile>>
       </div>
       <div class="col-md-6">
-        <h1>second</h1>
         <!-- 動態 -->
+
       </div>
     </div>
   </div>
@@ -19,6 +19,7 @@
 
 <script setup>
   import userProfile from "../components/userProfile.vue"
+  import userEdit from "../components/userEdit.vue"
   const user = {
     "id": 2,
     "account": "000002",
