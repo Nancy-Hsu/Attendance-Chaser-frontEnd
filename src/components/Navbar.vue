@@ -1,7 +1,7 @@
 <template>
   <nav class="navbar navbar-expand-lg navbar-dark bg-info px-4">
     <div class="container-fluid ">
-      <router-link class="navbar-brand fs-4" to="/">
+      <router-link class="navbar-brand fs-2" to="/main">
         Titaners' 出勤系統
       </router-link>
       <button class="navbar-toggler collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#navbarColor01"
@@ -11,12 +11,12 @@
       <div class="navbar-collapse collapse" id="navbarColor01" style="">
         <ul class="navbar-nav me-auto">
           <li v-for="tab in tabs" :key="tab.id" class="nav-item">
-            <router-link :to="tab.path" class="nav-link">
+            <router-link :to="tab.path" class="nav-link fs-4">
               {{ tab.title }}
             </router-link>
           </li>
           <li class="nav-item">
-            <button type="button" class="btn btn-sm btn-outline-light my-2 my-sm-0">
+            <button type="button" class="btn btn-sm btn-outline-light my-2 my-sm-0 fs-5">
               登出
             </button>
           </li>
