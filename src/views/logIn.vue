@@ -10,7 +10,7 @@
     password: ""
   })
 
-  async function userLogin() {
+  async function userLogin() { 
     try {
       if (!data.account || !data.password) {
         Toast.warning(
@@ -18,6 +18,7 @@
         )
         return
       }
+
       const response = await authorizationAPI.login({
         account: data.account,
         password: data.password
@@ -27,7 +28,8 @@
         throw new Error(returnData.message)
       }
       localStorage.setItem('token', returnData.token)
-      router.push({ path: "/" })
+      router.push({ path: "/main" })
+
     } catch (error) {
       data.password = ''
       Toast.error(
