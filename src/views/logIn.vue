@@ -1,7 +1,9 @@
 <script setup>
+  import { ref, reactive } from 'vue'
   import { useRouter } from "vue-router"
   import authorizationAPI from './../apis/authorization'
-  import { ref, reactive } from 'vue'
+  import { Toast } from './../utils/helpers'
+  import logo from "../assets/images/logo.png"
   const router = useRouter();
   const data = reactive({
     account: "",
@@ -9,53 +11,71 @@
   })
 
   async function userLogin() {
-    const response = await authorizationAPI.login({
-      account: data.account,
-      password: data.password
-    })
-    const returnData = response.data
-    localStorage.setItem('token', returnData.token)
-    router.push({ path: "/" })
-    console.log('response', returnData)
-
-
-    console.log(data.account)
-    console.log('hi')
-    const API_URL = import.meta.env.API_URL
+    try {
+      if (!data.account || !data.password) {
+        Toast.warning(
+          '請填入 email 和 password'
+        )
+        return
+      }
+      const response = await authorizationAPI.login({
+        account: data.account,
+        password: data.password
+      })
+      const returnData = response.data
+      if (returnData.status === 'error') {
+        throw new Error(returnData.message)
+      }
+      localStorage.setItem('token', returnData.token)
+      router.push({ path: "/" })
+    } catch (error) {
+      data.password = ''
+      Toast.error(
+        '帳號或密碼不正確')
+    }
   }
 </script>
 
 <template>
-  <div>
-    <h1>Login</h1>
-    <form @submit.prevent="onSubmit">
-      <fieldset>
-        <div class="form-group row mb-3">
-          <label for="account" class="col-sm-2 col-form-label">Account</label>
-          <div class="col-sm-10">
-            <input 
-            v-model="data.account" 
-            type="text" 
-            class="form-control" 
-            id="account" aria-describedby="insertAccount"
-            placeholder="Enter account" autocomplete="username" required autofocus /><small
-              class="form-text text-muted">預設為你的工號</small>
-          </div>
+  <div class="container py-5">
+    <div class="row">
+      <div class="col-md-5 text-end p-3 ">
+        <img :src="logo" alt="">
+      </div>
+      <div class="col-md-1"></div>
+      <div class="col-md-6">
+        <!-- 動態 -->
+        <div>
+          <h1>Login</h1>
+          <form @submit.prevent="onSubmit">
+            <fieldset>
+              <div class="form-group row mb-3">
+                <label for="account" class="col-sm-2 col-form-label fs-4">Account</label>
+                <div class="col-sm-5">
+                  <input v-model="data.account" type="text" class="form-control" id="account"
+                    aria-describedby="insertAccount" placeholder="Enter account" autocomplete="username" required
+                    autofocus /><small class="form-text text-muted">預設為你的工號</small>
+                </div>
+              </div>
+              <div class="form-group row mb-3 fs-4">
+                <label for="password" class="col-sm-2 col-form-label">Password</label>
+                <div class="col-sm-5">
+                  <input v-model="data.password" type="password" class="form-control" id="password"
+                    placeholder="Password" autocomplete="current-password" required />
+                </div>
+              </div>
+              <div class="text-center">
+                <button type="submit" class="btn btn-primary btn-block mb-3" @click="userLogin()">Submit</button>
+              </div>
+
+            </fieldset>
+          </form>
+          <!-- <router-link to="/web_build">Go to web_build(使用 router-link)</router-link> -->
         </div>
-        <div class="form-group row mb-3">
-          <label for="password" class="col-sm-2 col-form-label">Password</label>
-          <div class="col-sm-10">
-            <input 
-            v-model="data.password" type="password" class="form-control" 
-            id="password" placeholder="Password"
-            autocomplete="current-password" required />
-          </div>
-        </div>
-        <button type="submit" class="btn btn-primary btn-block mb-3" @click="userLogin()">Submit</button>
-      </fieldset>
-    </form>
-    <!-- <router-link to="/web_build">Go to web_build(使用 router-link)</router-link> -->
+      </div>
+    </div>
   </div>
+
 </template>
 
 <style>

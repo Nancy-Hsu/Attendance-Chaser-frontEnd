@@ -1,4 +1,4 @@
-import apiHelper from '../utils/helpers'
+import  { apiHelper } from '../utils/helpers'
 
 export default {
   login({ account, password }) {
