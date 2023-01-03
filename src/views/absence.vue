@@ -7,7 +7,7 @@
       <div class="col-md-5">
 
         <!-- 個人資料 -->
-        <userProfile :user="user"></userProfile>>
+        <userProfile :user="user"></userProfile>
       </div>
       <div class="col-md-6">
         <!-- 動態 -->

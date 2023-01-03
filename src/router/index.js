@@ -3,7 +3,6 @@ import NotFound from '@/views/NotFound.vue'
 import Main from '@/views/main.vue'
 
 const routes = [
-  
   {
     path: "/",
     name: "root",

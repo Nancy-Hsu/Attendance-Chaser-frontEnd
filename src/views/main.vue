@@ -15,18 +15,18 @@
 </template>
 
 <script setup>
+  import { ref, onBeforeMount } from 'vue'
   import userProfile from "../components/userProfile.vue"
   import userEdit from "../components/userEdit.vue"
   import clockIn from "../components/clockIn.vue"
-  const user = {
-    "id": 2,
-    "account": "000002",
-    "email": "RogahnAusten@example.com",
-    "employeeId": "000002",
-    "name": "Rogahn Austen",
-    "isRemote": true,
-    "createdAt": "2022-12-28T14:13:57.000Z",
-    "updatedAt": "2022-12-28T14:13:57.000Z"
-  }
+  import userAPI from './../apis/user'
+  import { Toast } from './../utils/helpers'
+
+  const user = ref('')
+  onBeforeMount(async () => {
+    const response = await userAPI.getCurrentUser()
+    user.value = response.data.currentUser
+  })
+
 
 </script>

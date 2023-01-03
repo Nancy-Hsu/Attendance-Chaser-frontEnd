@@ -14,7 +14,8 @@
       <p class="card-text">
         Email: {{ user.email }}</p>
       <p class="card-text">
-        是否遠端: {{ user.isRemote }}, 入職日: {{ workStartDate }}</p>
+        是否遠端：
+        {{ user.isRemote }} , 入職日： {{ user.createdAt }}</p>
     </div>
     <ul class="list-group list-group-flush">
       <li class="list-group-item">打卡資料
@@ -27,19 +28,27 @@
 </template>
 
 <script setup>
+  import { ref, onBeforeMount } from 'vue'
+  import userAPI from './../apis/user'
+  import { Toast } from './../utils/helpers'
   import dayjs from "dayjs"
   import { computed } from 'vue'
 
-  const props = defineProps({
-    user: {
-      type: Object,
-    }
-  })
-  const date = props.user.createdAt
-  const workStartDate = computed(date => {
-    return dayjs(date).format('YYYY/MM/DD')
-  })
-
+  // const props = defineProps({
+  //   user: {
+  //     type: Object,
+  //   }
+  // })
+  const user = ref('')
+    onBeforeMount(async () => {
+      const response = await userAPI.getCurrentUser()
+      user.value = response.data.currentUser
+      const date = user.createdAt
+      const workStartDate = computed(date => {
+        return dayjs(date).format('YYYY/MM/DD')
+      })
+      user.value.createdAt = workStartDate
+    })
 
 </script>
 

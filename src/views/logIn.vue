@@ -18,22 +18,29 @@
         )
         return
       }
-
       const response = await authorizationAPI.login({
         account: data.account,
         password: data.password
       })
-      const returnData = response.data
-      if (returnData.status === 'error') {
-        throw new Error(returnData.message)
+      const returnData = response?.data
+      if (returnData.status === 'warning') {
+         Toast.warning(
+          returnData.msg)
+          return
+      }
+      if (returnData?.status === 'error') {
+         Toast.error(
+          returnData.message)
+          return
       }
       localStorage.setItem('token', returnData.token)
       router.push({ path: "/main" })
 
-    } catch (error) {
+    } 
+    catch (error) {
       data.password = ''
       Toast.error(
-        '帳號或密碼不正確')
+        '帳號已上鎖，請 30 分鐘後再試！')
     }
   }
 </script>
