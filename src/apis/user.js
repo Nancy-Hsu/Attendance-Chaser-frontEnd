@@ -10,4 +10,7 @@ export default {
   getCurrentUser() {
     return apiHelper.get(`/currentUser`)
   },
+  getUserAbsence({ userId }) {
+    return apiHelper.get(`/users/${userId}/absence`)
+  },
 }

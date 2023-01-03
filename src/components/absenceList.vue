@@ -1,25 +1,59 @@
 <template>
-<h2 class="fw-bold ms-2">
-  出勤異常
-</h2>
-<small></small>
-<table class="table table-hover table-primary ms-2 text-center">
-  <thead>
-    <tr>
-      <th scope="col">狀態</th>
-      <th scope="col">日期</th>
-      <th scope="col">上班時間</th>
-      <th scope="col">下班時間</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr class="table-light">
-      <th scope="row">異常</th>
-      <td>2022-12-30</td>
-      <td>09:00</td>
-      <td>12:00</td>
-    </tr>
-  </tbody>
-</table>
+  <h2 class="fw-bold ms-2">
+    出勤異常
+  </h2>
+  <small></small>
+  <table class="table table-hover table-primary ms-2 text-center">
+    <thead>
+      <tr>
+        <th scope="col">狀態</th>
+        <th scope="col">日期</th>
+        <th scope="col">上班時間</th>
+        <th scope="col">下班時間</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr v-for="absence in absences" :key="absence.id" class="table-light">
+        <th scope="row">異常</th>
+        <td>{{absence.day}}</td>
+        <td>{{absence.startTime}}</td>
+        <td>{{absence.endTime}}</td>
+      </tr>
+    </tbody>
+  </table>
 
 </template>
+
+<script setup>
+  import { ref, reactive, computed, onBeforeMount } from 'vue'
+  import userAPI from './../apis/user'
+  import { Toast } from './../utils/helpers'
+  // import { day } from './../../day.js'
+  import dayjs from "dayjs"
+  import utc from "dayjs/plugin/utc"
+  import timezone from "dayjs/plugin/timezone"
+  dayjs.extend(utc)
+  
+
+  const absences = ref([]);
+  onBeforeMount(async () => {
+    try {
+      const response = await userAPI.getCurrentUser()
+      const currentUserId = response.data.currentUser.id
+
+      let absenceList = await userAPI.getUserAbsence({ userId: currentUserId })
+      absenceList = absenceList.data.absenceData
+
+      const filtered = computed(() => absenceList.map(item => ({
+        ...item,
+        startTime: item.startTime? dayjs(item.startTime).utc().format('HH:mm'): '未打卡' ,
+        endTime: item.endTime? dayjs(item.endTime).utc().format('HH:mm') : '未打卡',
+        day: dayjs(item.startTime).utc().format('YYYY/MM/DD') 
+      })))
+      absences.value = filtered.value
+
+    } catch (error) {
+      console.log(error);
+    }
+  })
+</script>
