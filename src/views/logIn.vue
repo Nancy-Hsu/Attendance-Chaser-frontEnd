@@ -4,13 +4,16 @@
   import authorizationAPI from './../apis/authorization'
   import { Toast } from './../utils/helpers'
   import logo from "../assets/images/logo.png"
-  const router = useRouter();
+  import { userStore } from '../store/index.js'
+  const store = userStore()   
+  const router = useRouter()
+
   const data = reactive({
     account: "",
     password: ""
   })
 
-  async function userLogin() { 
+  async function userLogin() {
     try {
       if (!data.account || !data.password) {
         Toast.warning(
@@ -24,23 +27,28 @@
       })
       const returnData = response?.data
       if (returnData.status === 'warning') {
-         Toast.warning(
+        Toast.warning(
           returnData.msg)
-          return
+        return
       }
       if (returnData?.status === 'error') {
-         Toast.error(
+        Toast.error(
           returnData.message)
-          return
+        return
       }
       localStorage.setItem('token', returnData.token)
+      const { user } = returnData
+       
+
+      store.setCurrentUser(user)
+      console.log(store.currentUser.isAuthenticated)
       router.push({ path: "/main" })
 
-    } 
+    }
     catch (error) {
       data.password = ''
       Toast.error(
-        error.response.data.message)
+        error.response?.data?.message || error.message)
     }
   }
 </script>
@@ -54,9 +62,9 @@
       <!-- <div class="col-md-1"></div> -->
       <div class="col-md-6">
         <!-- 動態 -->
-        <div >
+        <div>
           <h1 class="px-4 py-2 w-75 text-end">Login</h1>
-          <form @submit.prevent="onSubmit" >
+          <form @submit.prevent="onSubmit">
             <fieldset>
               <div class="form-group row mb-3 w-75 text-start">
                 <label for="account" class="col-sm-3 col-form-label fs-4">Account</label>

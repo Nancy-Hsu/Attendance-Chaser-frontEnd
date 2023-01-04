@@ -39,7 +39,7 @@
       const data = {
         lat: crd.latitude,
         lng: crd.longitude,
-        timeStamp: 1672812000000
+        timeStamp: position.timestamp
       }
       const clockin = await attendanceAPI.postAttendance({ data })
       Toast.success(clockin.data.msg)

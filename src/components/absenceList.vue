@@ -13,12 +13,16 @@
       </tr>
     </thead>
     <tbody>
-      <tr v-for="absence in absences" :key="absence.id" class="table-light">
+      
+      <tr v-if="absences" v-for="absence in absences" :key="absence.id" class="table-light">
         <th scope="row">異常</th>
         <td>{{absence.day}}</td>
         <td>{{absence.startTime}}</td>
         <td>{{absence.endTime}}</td>
       </tr>
+      <td colspan ="4" v-else class="text-center">
+        目前沒有異常資料
+      </td>
     </tbody>
   </table>
 
@@ -37,8 +41,10 @@
       const currentUserId = response.data.currentUser.id
 
       let absenceList = await userAPI.getUserAbsence({ userId: currentUserId })
-      absenceList = absenceList.data.absenceData
-
+      absenceList = absenceList.data.absenceData 
+      if (!absenceList.length)  {
+        absences.value = false 
+      return }
       const filtered = computed(() => absenceList.map(item => ({
         ...item,
         startTime: item.startTime? day(item.startTime).format('HH:mm'): '未打卡' ,

@@ -13,6 +13,8 @@
     "bootstrap": "^5.2.3",
     "dayjs": "^1.11.7",
     "jquery": "^3.6.3",
+    "nprogress": "^0.2.0",
+    "pinia": "^2.0.28",
     "popper.js": "^1.16.1",
     "sweetalert2": "^9.8.2",
     "vue": "^3.2.45",
