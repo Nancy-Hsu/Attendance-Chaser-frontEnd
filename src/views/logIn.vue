@@ -40,7 +40,7 @@
     catch (error) {
       data.password = ''
       Toast.error(
-        '帳號已上鎖，請 30 分鐘後再試！')
+        error.response.data.message)
     }
   }
 </script>
@@ -48,32 +48,32 @@
 <template>
   <div class="container py-5">
     <div class="row">
-      <div class="col-md-5 text-end p-3 ">
+      <div class="col-md-6 text-center p-3 ">
         <img :src="logo" alt="">
       </div>
-      <div class="col-md-1"></div>
+      <!-- <div class="col-md-1"></div> -->
       <div class="col-md-6">
         <!-- 動態 -->
-        <div>
-          <h1>Login</h1>
-          <form @submit.prevent="onSubmit">
+        <div >
+          <h1 class="px-4 py-2 w-75 text-end">Login</h1>
+          <form @submit.prevent="onSubmit" >
             <fieldset>
-              <div class="form-group row mb-3">
-                <label for="account" class="col-sm-2 col-form-label fs-4">Account</label>
-                <div class="col-sm-5">
+              <div class="form-group row mb-3 w-75 text-start">
+                <label for="account" class="col-sm-3 col-form-label fs-4">Account</label>
+                <div class="col-sm-9">
                   <input v-model="data.account" type="text" class="form-control" id="account"
                     aria-describedby="insertAccount" placeholder="Enter account" autocomplete="username" required
                     autofocus /><small class="form-text text-muted">預設為你的工號</small>
                 </div>
               </div>
-              <div class="form-group row mb-3 fs-4">
-                <label for="password" class="col-sm-2 col-form-label">Password</label>
-                <div class="col-sm-5">
+              <div class="form-group row mb-3 fs-4 w-75 text-start">
+                <label for="password" class="col-sm-3 col-form-label">Password</label>
+                <div class="col-sm-9">
                   <input v-model="data.password" type="password" class="form-control" id="password"
                     placeholder="Password" autocomplete="current-password" required />
                 </div>
               </div>
-              <div class="text-center">
+              <div class="px-4 w-75 text-end">
                 <button type="submit" class="btn btn-primary btn-block mb-3" @click="userLogin()">Submit</button>
               </div>
 

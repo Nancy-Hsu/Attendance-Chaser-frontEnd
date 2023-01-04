@@ -28,13 +28,8 @@
   import { ref, reactive, computed, onBeforeMount } from 'vue'
   import userAPI from './../apis/user'
   import { Toast } from './../utils/helpers'
-  // import { day } from './../../day.js'
-  import dayjs from "dayjs"
-  import utc from "dayjs/plugin/utc"
-  import timezone from "dayjs/plugin/timezone"
-  dayjs.extend(utc)
+  import { day } from './../../day.js'
   
-
   const absences = ref([]);
   onBeforeMount(async () => {
     try {
@@ -46,14 +41,14 @@
 
       const filtered = computed(() => absenceList.map(item => ({
         ...item,
-        startTime: item.startTime? dayjs(item.startTime).utc().format('HH:mm'): '未打卡' ,
-        endTime: item.endTime? dayjs(item.endTime).utc().format('HH:mm') : '未打卡',
-        day: dayjs(item.startTime).utc().format('YYYY/MM/DD') 
+        startTime: item.startTime? day(item.startTime).format('HH:mm'): '未打卡' ,
+        endTime: item.endTime? day(item.endTime).format('HH:mm') : '未打卡',
+        day: day(item.startTime).format('YYYY/MM/DD') 
       })))
       absences.value = filtered.value
 
     } catch (error) {
-      console.log(error);
+      Toast.error(error.response.data.message);
     }
   })
 </script>

@@ -7,7 +7,7 @@
       <div class="col-md-5">
 
         <!-- 個人資料 -->
-        <userProfile :user="user"></userProfile>
+        <userProfile ></userProfile>
       </div>
       <div class="col-md-6">
         <!-- 動態 -->
@@ -20,15 +20,5 @@
 <script setup>
   import userProfile from "../components/userProfile.vue"
   import absenceList from "../components/absenceList.vue"
-  const user = {
-    "id": 2,
-    "account": "000002",
-    "email": "RogahnAusten@example.com",
-    "employeeId": "000002",
-    "name": "Rogahn Austen",
-    "isRemote": true,
-    "createdAt": "2022-12-28T14:13:57.000Z",
-    "updatedAt": "2022-12-28T14:13:57.000Z"
-  }
 
 </script>

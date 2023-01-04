@@ -40,7 +40,8 @@
   //   }
   // })
   const user = ref('')
-    onBeforeMount(async () => {
+  onBeforeMount(async () => {
+    try {
       const response = await userAPI.getCurrentUser()
       user.value = response.data.currentUser
       const date = user.createdAt
@@ -48,7 +49,12 @@
         return dayjs(date).format('YYYY/MM/DD')
       })
       user.value.createdAt = workStartDate
-    })
+
+    } catch (error) {
+      Toast.error(error.response.data.message)
+    }
+
+  })
 
 </script>
 

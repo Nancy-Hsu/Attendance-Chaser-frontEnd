@@ -59,7 +59,7 @@
 
     } catch (error) {
       console.log(error)
-      Toast.error('請輸入正確的舊密碼')
+      Toast.error(error.response.data.message)
       return
     }
   }
