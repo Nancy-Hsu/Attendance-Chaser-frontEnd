@@ -17,7 +17,7 @@
     try {
       if (!data.account || !data.password) {
         Toast.warning(
-          '請填入 email 和 password'
+          '請填入 account 和 password'
         )
         return
       }

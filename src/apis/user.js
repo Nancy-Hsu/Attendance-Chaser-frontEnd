@@ -2,15 +2,15 @@ import { apiHelper } from '../utils/helpers'
 
 export default {
   putUser({ userId, formData }) {
-    return apiHelper.put(`/users/${userId}`, formData)
+    return apiHelper.put(`/api/users/${userId}`, formData)
   },
   getUser({ userId }) {
-    return apiHelper.get(`/users/${userId}`, formData)
+    return apiHelper.get(`/api/users/${userId}`, formData)
   },
   getCurrentUser() {
-    return apiHelper.get(`/currentUser`)
+    return apiHelper.get(`/api/currentUser`)
   },
   getUserAbsence({ userId }) {
-    return apiHelper.get(`/users/${userId}/absence`)
+    return apiHelper.get(`/api/users/${userId}/absence`)
   },
 }

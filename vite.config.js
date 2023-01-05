@@ -11,4 +11,13 @@ export default defineConfig({
   },
   base: '/Attendance-Chaser-frontEnd/',
   plugins: [vue()],
+  server: {
+    proxy: {
+      "/api": {
+        target: 'https://attendancechaser-env.eba-hw6nimfd.ap-northeast-1.elasticbeanstalk.com',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api/, '')
+      }
+    }
+  }
 })
