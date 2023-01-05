@@ -57,6 +57,8 @@
     const currentUserId = currentUser.id
     const putResponse = await userAPI.putUser({ userId: currentUserId, formData: userEdit })
 
+    Toast.success(putResponse.message)
+
     } catch (error) {
       console.log(error)
       Toast.error(error.response.data.message)

@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory } from 'vue-router'
+import { createRouter, createWebHashHistory } from 'vue-router'
 import NotFound from '@/views/NotFound.vue'
 import Main from '@/views/main.vue'
 import { Toast } from '../utils/helpers'
@@ -44,7 +44,7 @@ const routes = [
 
 const router = createRouter({
   linkExactActiveClass: 'active',
-  history: createWebHistory('/attendance-chaser'),
+  history: createWebHashHistory('/attendance-chaser'),
   routes
 })
 // 
