@@ -8,9 +8,11 @@ npm run build
 cd dist
 
 git init
-git add -A
+git add .
 git commit -m 'deploy'
 
-git push -f https://github.com/Nancy-Hsu/Attendance-Chaser-frontEnd.git main:gh-pages
+git branch -M gh-pages
+
+git push -f https://github.com/Nancy-Hsu/Attendance-Chaser-frontEnd.git gh-pages
 
 cd -

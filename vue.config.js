@@ -1,5 +1,5 @@
 module.exports = {
-  publicPath: process.env.NODE_ENV === 'production'
-    ? '/vite-project/'
+  publicPath: import.meta.env.NODE_ENV === 'production'
+    ? '/Attendance-Chaser-frontEnd/'
     : '/'
 }
