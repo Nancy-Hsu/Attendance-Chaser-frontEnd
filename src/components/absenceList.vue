@@ -2,8 +2,8 @@
   <h2 class="fw-bold ms-2">
     出勤異常
   </h2>
-  <small></small>
-  <table class="table table-hover table-primary ms-2 text-center">
+  <small class="p-3">將顯示近兩個月的打卡異常</small>
+  <table class="table table-hover table-primary m-2 text-center">
     <thead>
       <tr>
         <th scope="col">狀態</th>
@@ -52,7 +52,8 @@
         // const isAfterDate = dayjs(endTime).isAfter(dayjs(item.date))
 
         startTime = day(startTime).format('HH:mm') || '未打卡'
-        endTime = endTime? dayjs(endTime).isAfter(dayjs(item.date)) ? day(endTime).format('HH:mm') +' (+1)': day(endTime).format('HH:mm') : '未打卡'
+        endTime = endTime? day(endTime).isAfter(item.date, 'day') ? day(endTime).format('HH:mm') +' (+1)': day(endTime).format('HH:mm') : '未打卡'
+
         
         return {
           ...item,
