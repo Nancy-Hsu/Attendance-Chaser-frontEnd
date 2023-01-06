@@ -12,8 +12,10 @@ export default defineConfig({
   base: '/Attendance-Chaser-frontEnd/',
   plugins: [vue()],
   server: {
+    hostname: '0.0.0.0',
+    cors: true,
     proxy: {
-      "/api": {
+      '/api': {
         target: 'https://attendancechaser-env.eba-hw6nimfd.ap-northeast-1.elasticbeanstalk.com',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, '')
