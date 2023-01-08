@@ -13,4 +13,7 @@ export default {
   getUserAbsence({ userId }) {
     return apiHelper.get(`/api/users/${userId}/absence/`)
   },
+  getUserAttended({ userId, year, month }) {
+    return apiHelper.get(`/api/users/${userId}/attended?year=${year}&month=${month}`)
+  },
 }

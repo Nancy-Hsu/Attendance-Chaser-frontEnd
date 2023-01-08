@@ -1,5 +1,5 @@
 <template>
-  <nav class="navbar navbar-expand-lg navbar-dark bg-info px-4 ">
+  <nav class="navbar navbar-expand-lg navbar-dark bg-info px-4 shadow">
     <div class="container-fluid">
       <router-link class="navbar-brand fs-2" to="/main">
         Titaners' 出勤系統

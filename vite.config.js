@@ -16,7 +16,7 @@ export default defineConfig({
     cors: true,
     proxy: {
       '/api': {
-        target: 'https://attendancechaser-env.eba-hw6nimfd.ap-northeast-1.elasticbeanstalk.com',
+        target: 'https://www.chaserone.link',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, '')
       }
