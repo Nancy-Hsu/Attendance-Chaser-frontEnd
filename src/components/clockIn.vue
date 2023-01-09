@@ -1,8 +1,9 @@
 <template>
   <div class="text-center">
-  <button @click='clockIn' type="button" class="btn btn-primary fs-3 w-50 mb-3 me-3 shadow">Clock in</button>
-  <button @click="showQRmodal" type="button" class="btn btn-outline-info fs-3 mb-3 shadow">QR code</button>
-  <button v-if="currentUser.isAdmin" @click="showReaderModal" type="button" class="btn btn-outline-info fs-3 mb-3 mx-2 shadow">Reader</button>
+    <button @click='clockIn' type="button" class="btn btn-primary fs-3 w-50 mb-3 me-3 shadow">Clock in</button>
+    <button @click="showQRmodal" type="button" class="btn btn-outline-info fs-3 mb-3 shadow">QR code</button>
+    <button v-if="currentUser.isAdmin" @click="showReaderModal" type="button"
+      class="btn btn-outline-info fs-3 mb-3 mx-2 shadow">Reader</button>
   </div>
 
   <!-- qrCode Modal -->
@@ -60,6 +61,7 @@
   import CryptoJS from 'crypto-js'
   import { storeToRefs } from 'pinia'
   import { userStore } from "../store/index.js"
+  import bus from 'vue3-eventbus'
 
   const store = userStore()
   const { currentUser } = storeToRefs(store)
@@ -138,6 +140,7 @@
       }
       //進行打卡
       const clockin = await attendanceAPI.postAttendance({ data })
+      bus.emit('clockIn')
       Toast.success(`${day(data.timeStamp).format('HH:mm')} ${clockin.data.msg}`)
     } catch (error) {
       Toast.error(error?.response?.data?.message || error.message)

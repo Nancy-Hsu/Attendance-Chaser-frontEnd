@@ -37,9 +37,18 @@
   import { userStore } from "../store/index.js"
   const store = userStore()
   const { currentUser } = storeToRefs(store)
+  import bus from 'vue3-eventbus'
+
+  bus.on('clockIn', () => {
+    getAttended()
+  })
 
   let attended = ref('')
-  onBeforeMount(async () => {
+  onBeforeMount(() => {
+    getAttended()
+  })
+
+  const getAttended = async() => {
     try {
       const currentUserId = currentUser.value.id
       const year = day().year()
@@ -63,5 +72,5 @@
     } catch (error) {
       Toast.error(error.response?.data?.message || error.message)
     }
-  })
+  }
 </script>

@@ -2,7 +2,7 @@
   <h2 class="fw-bold ms-2">
     出勤異常
   </h2>
-  <small class="p-3">將顯示近兩個月的打卡異常</small>
+  <h5 class="p-2">將顯示近兩個月的打卡異常</h5>
   <table class="table table-hover table-primary m-2 text-center shadow">
     <thead>
       <tr>
@@ -19,7 +19,7 @@
         <td>{{absence.startTime}}</td>
         <td>{{absence.endTime}}</td>
       </tr>
-      <td colspan="4" v-else class="text-center">
+      <td colspan="4" v-else class="text-center fs-5 p-2">
         目前沒有異常資料
       </td>
     </tbody>
@@ -50,7 +50,7 @@
       }
       const formattedTime = computed(() => absenceList.map(item => {
         let { startTime, endTime } = item.Attendances
-        startTime = day(startTime).format('HH:mm') || '未打卡'
+        startTime = startTime ? day(startTime).format('HH:mm') : '未打卡'
         endTime = endTime ? day(endTime).isAfter(item.date, 'day') ? day(endTime).format('HH:mm') + ' (+1)' : day(endTime).format('HH:mm') : '未打卡'
         return {
           ...item,

@@ -2,7 +2,7 @@
   <h2 class="fw-bold">
     更改密碼
   </h2>
-  <p>請先輸入您的密碼在進行更改</p>
+  <h5 class="p-1">請先輸入您的密碼在進行更改</h5>
 
   <form @submit.prevent="onSubmit">
     <div class="form-group mt-3 mb-3">

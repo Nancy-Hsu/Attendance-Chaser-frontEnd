@@ -16,7 +16,7 @@
                 <div class="col-sm-9">
                   <input v-model="data.account" type="text" class="form-control fs-4" id="account"
                     aria-describedby="insertAccount" placeholder="Enter account" autocomplete="username" required
-                    autofocus /><p class="form-text text-muted">預設為你的工號</p>
+                    autofocus /><p class="form-text text-muted fs-5">預設為你的工號</p>
                 </div>
               </div>
               <div class="form-group row mb-2 fs-4 w-75 text-start">
@@ -65,6 +65,11 @@
         password: data.password
       })
       const returnData = response?.data
+
+      if (returnData.status === 'warning') {
+        Toast.warning(`${returnData.msg}`)
+        return 
+      }
      
       localStorage.setItem('token', returnData.token)
       const { user } = returnData

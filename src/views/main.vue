@@ -18,5 +18,4 @@
   import userProfile from "../components/userProfile.vue"
   import clockIn from "../components/clockIn.vue"
   import attendedList from "../components/attendedList.vue"
-
 </script>
