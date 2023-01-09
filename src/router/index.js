@@ -2,12 +2,9 @@ import { createRouter, createWebHashHistory } from 'vue-router'
 import NotFound from '@/views/NotFound.vue'
 import Main from '@/views/main.vue'
 import { Toast } from '../utils/helpers'
-
 import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
-
 import { userStore } from '../store/index.js'
-
 
 const routes = [
   {

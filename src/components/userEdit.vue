@@ -2,35 +2,39 @@
   <h2 class="fw-bold">
     更改密碼
   </h2>
-  <small>請先輸入您的密碼在進行更改</small>
+  <p>請先輸入您的密碼在進行更改</p>
 
   <form @submit.prevent="onSubmit">
-    <div class="form-group mt-3 mb-2">
-      <label for="oldPassword">Origin Password</label>
-      <input type="password" class="form-control" id="oldPassword" placeholder="your origin password"
-        v-model="userEdit.oldPassword"  required>
+    <div class="form-group mt-3 mb-3">
+      <label for="oldPassword" class="fs-4 mb-1">Original Password</label>
+      <input type="password" class="form-control 
+      shadow" id="oldPassword" placeholder="your origin password" v-model="userEdit.oldPassword" required>
     </div>
-    <div class="form-group mb-2">
-      <label for="newPassword">New Password</label>
-      <input type="password" class="form-control" id="newPassword" placeholder="your new password"
+    <div class="form-group mb-3">
+      <label for="newPassword" class="fs-4 mb-1">New Password</label>
+      <input type="password" class="form-control shadow" id="newPassword" placeholder="your new password"
         v-model="userEdit.newPassword" required>
     </div>
-    <div class="form-group mb-2">
-      <label for="newPasswordCheck">New Password</label>
-      <input type="password" class="form-control" id="newPasswordCheck" placeholder="confirm new password"
-        v-model="userEdit.newPasswordCheck" >
+    <div class="form-group mb-3">
+      <label for="newPasswordCheck" class="fs-4 mb-1">New Password</label>
+      <input type="password" class="form-control shadow" id="newPasswordCheck" placeholder="confirm new password"
+        v-model="userEdit.newPasswordCheck">
     </div>
     <div class="form-group mt-3">
-      <button type="submit" class="btn btn-primary">確定更改</button>
+      <button type="submit" class="btn btn-outline-primary fs-5">確定更改</button>
     </div>
   </form>
 </template>
 
 <script setup>
   import { reactive, computed } from 'vue'
-  import { useRouter } from "vue-router"
   import userAPI from './../apis/user'
   import { Toast } from './../utils/helpers'
+  import { storeToRefs } from 'pinia'
+  import { userStore } from "../store/index.js"
+  const store = userStore()
+  const { currentUser } = storeToRefs(store)
+
   const userEdit = reactive({
     oldPassword: '',
     newPassword: '',
@@ -47,21 +51,17 @@
           Toast.error('請填上所有欄位')
           return
         }
-      } 
+      }
       if (!confirmPassword.value) {
         Toast.error('請確認新密碼兩者相同')
         return
       }
-    const response = await userAPI.getCurrentUser()
-    const { currentUser } = response.data
-    const currentUserId = currentUser.id
-    const putResponse = await userAPI.putUser({ userId: currentUserId, formData: userEdit })
-    Toast.success(putResponse.data.message)
+      const currentUserId = currentUser.value.id
+      const putResponse = await userAPI.putUser({ userId: currentUserId, formData: userEdit })
+      Toast.success(putResponse.data.message)
 
     } catch (error) {
-      console.log(error)
-      Toast.error(error.response.data.message)
-      return
+      Toast.error(error.response?.data?.message || error.message)
     }
   }
 

@@ -19,7 +19,6 @@
             <button type="button" class="btn btn-sm btn-outline-light mx-3 my-sm-0 fs-5 pt-2"  @click="userLogout">
               登出
             </button>
-          
           </li>
         </ul>
       </div>
@@ -28,11 +27,11 @@
 </template>
 
 <script setup>
-  import { onBeforeMount, ref, computed, toRefs, onMounted } from 'vue'
+  import { ref, computed} from 'vue'
   import { uuid } from 'vue3-uuid'
+   import { useRouter } from "vue-router"
   import { storeToRefs } from 'pinia'
   import { userStore } from "../store/index.js"
-  import { useRouter } from "vue-router"
   const router = useRouter()
   const store = userStore()
   const { logout } = store
@@ -55,5 +54,4 @@
     logout()
     router.push({ path: "/login" })
   }
-
 </script>

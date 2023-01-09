@@ -6,6 +6,4 @@ dayjs.extend(timezone)
 const TZ = dayjs.tz.guess()
 dayjs.tz.setDefault(TZ)
 
-
-
 export const day = dayjs

@@ -3,7 +3,7 @@
     出勤異常
   </h2>
   <small class="p-3">將顯示近兩個月的打卡異常</small>
-  <table class="table table-hover table-primary m-2 text-center">
+  <table class="table table-hover table-primary m-2 text-center shadow">
     <thead>
       <tr>
         <th scope="col">狀態</th>

@@ -13,4 +13,8 @@
 </template>
 
 <style>
+  #nprogress .bar {
+   background-color: antiquewhite !important;
+
+}
 </style>

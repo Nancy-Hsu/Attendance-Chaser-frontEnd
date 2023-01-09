@@ -2,6 +2,7 @@ import axios from 'axios'
 import 'sweetalert2/dist/sweetalert2.min.css'
 import Swal from 'sweetalert2'
 
+// axios
 const baseURL = import.meta.env.VITE_BASE_API
 const createAxios = axios.create({
   baseURL
@@ -18,6 +19,7 @@ createAxios.interceptors.request.use(
 )
 export const apiHelper = createAxios
 
+// Toast
 const toast = Swal.mixin({
   toast: true,
   position: 'top-end',
@@ -47,8 +49,6 @@ export const Toast = {
 }
 
 //取得使用者位置
-
-
 export const getPosition = () => {
   const options = {
     enableHighAccuracy: true,
