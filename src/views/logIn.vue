@@ -66,10 +66,11 @@
       })
       const returnData = response?.data
 
-      if (returnData.status === 'warning') {
-        Toast.warning(`${returnData.msg}`)
-        return 
-      }
+        if (returnData.status === 'warning') {
+          Toast.warning(
+            returnData.msg)
+          return
+        }
      
       localStorage.setItem('token', returnData.token)
       const { user } = returnData
