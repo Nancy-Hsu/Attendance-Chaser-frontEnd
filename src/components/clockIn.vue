@@ -1,8 +1,9 @@
 <template>
+  <div class="text-center">
   <button @click='clockIn' type="button" class="btn btn-primary fs-3 w-50 mb-3 me-3">打卡</button>
   <button @click="showQRmodal" type="button" class="btn btn-outline-info fs-3 mb-3">QR code</button>
-  <button @click="showReaderModal" type="button" class="btn btn-outline-info fs-3 mb-3 mx-2">Reader</button>
-  <!-- <p>{{text}}</p> -->
+  <button v-if="currentUser.isAdmin" @click="showReaderModal" type="button" class="btn btn-outline-info fs-3 mb-3 mx-2">Reader</button>
+  </div>
 
   <!-- qrCode Modal -->
   <div class="modal fade" ref="QRcodeModalRef" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
@@ -10,7 +11,7 @@
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title fw-bold text-center" id="exampleModalLabel">您的 QRcode</h5>
+          <h3 class="modal-title fw-bold text-center" id="exampleModalLabel">您的 QRcode ( 限當日有效 )</h3>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body text-center">
@@ -25,15 +26,18 @@
     </div>
   </div>
   <!-- reader Modal -->
-  <div class="modal fade" ref="readerModalRef" id="exampleModal" tabindex="-1" data-bs-backdrop="static"  data-bs-keyboard="false" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal fade" ref="readerModalRef" id="exampleModal" tabindex="-1" data-bs-backdrop="static"
+    data-bs-keyboard="false" aria-labelledby="staticBackdropLabel" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title fw-bold text-center" id="exampleModalLabel">請掃 QRcode，按 Close 來關閉相機</h5>
+          <h3 class="modal-title fw-bold " id="exampleModalLabel">請掃 QRcode，按 Close 來關閉相機</h3>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body text-center">
-          <qrcode-stream  v-if="offCamera" :key="_uid" @init="onInit" @decode="onDecode" />
+
+          <qrcode-stream v-if="offCamera" :key="_uid" @init="onInit" @decode="onDecode">
+          </qrcode-stream>
         </div>
         <div class="modal-footer">
           <button @click="offCamera = false" type="button" class="btn btn-secondary" data-bs-dismiss="modal">
@@ -47,107 +51,96 @@
 
 <script setup>
   import { ref, reactive, onMounted } from 'vue'
-  import { useRouter } from "vue-router"
   import attendanceAPI from './../apis/attendance'
   import { Modal } from "bootstrap"
-  import { Toast } from './../utils/helpers'
-  // import day from "./../../day.js"
+  import { Toast, getPosition, onInit } from './../utils/helpers'
+  import { day } from "../../day.js"
   import QrcodeVue from 'qrcode.vue'
-  import { QrcodeStream, QrcodeDropZone, QrcodeCapture } from "vue-qrcode-reader"
+  import { QrcodeStream } from "vue-qrcode-reader"
+  import CryptoJS from 'crypto-js'
   import { storeToRefs } from 'pinia'
   import { userStore } from "../store/index.js"
+
   const store = userStore()
   const { currentUser } = storeToRefs(store)
-  //modal
+  const secret = import.meta.env.VITE_ENCRYPT_SECRET
+
+  // QRcode modal
   let QRcodeModalRef = ref(null)
   let QRcodeModal = null
   onMounted(() => {
     QRcodeModal = new Modal(QRcodeModalRef.value, {})
+    readerModal = new Modal(readerModalRef.value, {})
   })
-
   const showQRmodal = () => {
     QRcodeModal.show()
   }
-  //QRcode
-  const value = ref('https://www.chaserone.link')
+  // QRcode value
+  const value = ref('')
+  const clockInInfo = { user: { id: currentUser.value.id }, timeStamp: day().valueOf() }
+  const encryptText = CryptoJS.AES.encrypt(JSON.stringify(clockInInfo), secret).toString()
+  value.value = encryptText
 
-  //QRcode reader
+  //// QRcode reader
   let offCamera = ref(false)
   let readerModalRef = ref(null)
   let readerModal = null
-  onMounted(() => {
-    readerModal = new Modal(readerModalRef.value, {})
-  })
-
+  // 建立 modal show
   const showReaderModal = () => {
-    readerModal.show()
     offCamera.value = true
+    readerModal.show()
   }
-  let text = ref("");
-  function onDecode(decodedString) {
-    text.value = decodedString;
-  }
-
-
-  async function onInit(promise) {
+  //解碼
+  async function onDecode(decodedString) {
     try {
-      const { capabilities } = await promise;
-      // successfully initialized
+      // 不是 admin 退出
+      if (!currentUser.value.isAdmin) throw new Error('您沒有權限')
+      //解碼
+      let decryptString = await CryptoJS.AES.decrypt(decodedString, secret)
+      let data = await JSON.parse(decryptString.toString(CryptoJS.enc.Utf8))
+      // 關掉 modal 以及 camera
+      readerModal.hide()
+      offCamera.value = false
+
+      // QRcode 日期不是今天退出
+      if (!data.user || !data.timeStamp) throw new Error('您的 QRcode 錯誤')
+      if (!day().isSame(data.timeStamp, 'date')) throw new Error('您的 QRcode 已過期')
+
+      // 重抓時間並打卡
+      data.timeStamp = day().valueOf()
+      const clockIn = await attendanceAPI.postAttendance({ data })
+      Toast.success(`${day(data.timeStamp).format('HH:mm')} ${clockIn.data.msg}`)
+
     } catch (error) {
-      if (error.name === "NotAllowedError") {
-        text.value = "Denied! No permission";
-        // user denied camera access permisson
-      } else if (error.name === "NotFoundError") {
-        // no suitable camera device installed
-      } else if (error.name === "NotSupportedError") {
-        // page is not served over HTTPS (or localhost)
-      } else if (error.name === "NotReadableError") {
-        // maybe camera is already in use
-      } else if (error.name === "OverconstrainedError") {
-        // did you requested the front camera although there is none?
-      } else if (error.name === "StreamApiNotSupportedError") {
-        // browser seems to be lacking features
-      }
-    } finally {
-      // hide loading indicator
+      Toast.error(error?.response?.data?.message || error.message)
     }
   }
 
   //一鍵打卡
-  const data = {}
-  const options = {
-    enableHighAccuracy: true,
-    maximumAge: 30000,
-    timeout: 5000
-  }
-  function success(position) {
-  }
-  function error(err) {
-    Toast.error(`${err.code} : ${err.message}`)
-  }
-  function getPosition() {
-    return new Promise((success, error) => {
-      navigator.geolocation.getCurrentPosition(success, error, options)
-    })
-  }
+  let data = {}
   const clockIn = async () => {
     try {
-      if (!navigator.geolocation) {
-        return Toast.warning('抱歉！瀏覽器不支援存取您的位置')
+      if (!currentUser.value.isRemote) {
+        if (!navigator.geolocation) {
+          return Toast.warning('抱歉！瀏覽器不支援存取您的位置')
+        }
+        const position = await getPosition()
+        const crd = position.coords
+        data = {
+          lat: crd.latitude,
+          lng: crd.longitude,
+          timeStamp: position.timestamp
+        }
+      } else {
+        data = {
+          timeStamp: day().valueOf()
+        }
       }
-      const position = await getPosition()
-      const crd = position.coords
-      const data = {
-        lat: crd.latitude,
-        lng: crd.longitude,
-        timeStamp: position.timestamp
-      }
+      //進行打卡
       const clockin = await attendanceAPI.postAttendance({ data })
-      Toast.success(clockin.data.msg)
+      Toast.success(`${day(data.timeStamp).format('HH:mm')} ${clockin.data.msg}`)
     } catch (error) {
-      console.log(error)
-      Toast.error(error.response.data.message)
+      Toast.error(error?.response?.data?.message || error.message)
     }
-
   } 
 </script>

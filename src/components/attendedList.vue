@@ -30,23 +30,25 @@
 
 <script setup>
   import { ref, reactive, computed, onBeforeMount } from 'vue'
-    import userAPI from './../apis/user'
-    import { Toast } from './../utils/helpers'
-    import { day } from './../../day.js'
+  import userAPI from './../apis/user'
+  import { Toast } from './../utils/helpers'
+  import { day } from './../../day.js'
+  import { storeToRefs } from 'pinia'
+  import { userStore } from "../store/index.js"
+  const store = userStore()
+  const { currentUser } = storeToRefs(store)
 
   let attended = ref('')
   onBeforeMount(async () => {
     try {
-      console.log('hi')
-      const response = await userAPI.getCurrentUser()
-      const currentUserId = response.data.currentUser.id
+      const currentUserId = currentUser.value.id
       const year = day().year()
       const month = day().month() + 1
-      console.log('h2')
+
       let attendedDate = await userAPI.getUserAttended({ userId: currentUserId, year, month })
       attendedDate = attendedDate.data.attendedDate
-      const filtered = computed(() => attendedDate.map(item => {
-        console.log('h3')
+
+      const filteredTime = computed(() => attendedDate.map(item => {
         let { startTime, endTime } = item.Attendances
         startTime = startTime ? day(startTime).format('HH:mm') : ''
         endTime = endTime ? day(endTime).isAfter(item.date, 'day') ? day(endTime).format('HH:mm') + ' (+1)' : day(endTime).format('HH:mm') : ''
@@ -56,27 +58,10 @@
           endTime,
         }
       }))
-      attended.value = filtered.value
-      console.log(attended.value)
+      attended.value = filteredTime.value
       return
     } catch (error) {
-      Toast.error(error.response?.data?.message || error.message);
+      Toast.error(error.response?.data?.message || error.message)
     }
   })
-
-
-  // const props = defineProps({
-  //   attended: {
-  //     type: Array,
-  //     default: () => []
-  //   }
-  // })
-  // date.value = props.attended
-  // watch(props.attended, (newVal, oldVal) => { // watch it
-  //   console.log('Prop changed: ', newVal, ' | was: ', oldVal)
-  // },
-  //  { deep: true }
-  // )
-
-
 </script>

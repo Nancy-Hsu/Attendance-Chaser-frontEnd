@@ -13,7 +13,6 @@
       </tr>
     </thead>
     <tbody>
-
       <tr v-if="absences" v-for="absence in absences" :key="absence.id" class="table-light">
         <th scope="row">異常</th>
         <td>{{absence.date}}</td>
@@ -25,7 +24,6 @@
       </td>
     </tbody>
   </table>
-
 </template>
 
 <script setup>
@@ -33,39 +31,36 @@
   import userAPI from './../apis/user'
   import { Toast } from './../utils/helpers'
   import { day } from './../../day.js'
+  import { storeToRefs } from 'pinia'
+  import { userStore } from "../store/index.js"
+  const store = userStore()
+  const { currentUser } = storeToRefs(store)
 
   const absences = ref([]);
   onBeforeMount(async () => {
     try {
-      const response = await userAPI.getCurrentUser()
-      const currentUserId = response.data.currentUser.id
+      const currentUserId = currentUser.value.id
 
       let absenceList = await userAPI.getUserAbsence({ userId: currentUserId })
       absenceList = absenceList.data.absenceData
+      // 沒有異常則返回
       if (!absenceList.length) {
         absences.value = false
         return
       }
-      const filtered = computed(() => absenceList.map(item => {                   
-
+      const formattedTime = computed(() => absenceList.map(item => {
         let { startTime, endTime } = item.Attendances
-        // const isAfterDate = dayjs(endTime).isAfter(dayjs(item.date))
-
         startTime = day(startTime).format('HH:mm') || '未打卡'
-        endTime = endTime? day(endTime).isAfter(item.date, 'day') ? day(endTime).format('HH:mm') +' (+1)': day(endTime).format('HH:mm') : '未打卡'
-
-        
+        endTime = endTime ? day(endTime).isAfter(item.date, 'day') ? day(endTime).format('HH:mm') + ' (+1)' : day(endTime).format('HH:mm') : '未打卡'
         return {
           ...item,
           startTime,
           endTime,
         }
       }))
-      absences.value = filtered.value
-      console.log(absences.value)
-
+      absences.value = formattedTime.value
     } catch (error) {
-      Toast.error(error.response?.data?.message || error.message);
+      Toast.error(error.response?.data?.message || error.message)
     }
   })
 </script>
