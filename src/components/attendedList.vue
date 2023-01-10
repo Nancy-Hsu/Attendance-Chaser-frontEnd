@@ -2,7 +2,8 @@
   <h2 class="fw-bold ms-2">
     當月出勤表
   </h2>
-  <table class="table table-hover table-primary m-2 text-center shadow">
+  <div id="attended-list" class="shadow">
+  <table class="table table-hover table-primary text-center " >
     <thead>
       <tr>
         <th scope="col">日期</th>
@@ -26,6 +27,7 @@
       </td>
     </tbody>
   </table>
+  </div>
 </template>
 
 <script setup>
@@ -48,7 +50,7 @@
     getAttended()
   })
 
-  const getAttended = async() => {
+  const getAttended = async () => {
     try {
       const currentUserId = currentUser.value.id
       const year = day().year()
@@ -74,3 +76,12 @@
     }
   }
 </script>
+
+<style>
+  #attended-list {
+    height: calc(100vh - 150px);
+    min-height: 210px;
+    width: 100%;
+    overflow-y: scroll
+  }
+</style>

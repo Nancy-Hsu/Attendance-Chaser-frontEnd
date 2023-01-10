@@ -2,7 +2,7 @@
   <div class="userDetails card mb-3 text-center shadow">
     <div class="card-body">
       <h2 class="card-title">{{ user.name }}</h2>
-      <h5 class="card-subtitle text-muted">工號: {{user.employeeId}}</h5>
+      <h5 class="card-subtitle text-muted">工號：{{user.employeeId}}</h5>
     </div>
     <div>
       <img
