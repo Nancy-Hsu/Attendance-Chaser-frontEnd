@@ -40,10 +40,11 @@
     newPassword: '',
     newPasswordCheck: ''
   })
+  // 先驗證是否兩者密碼相同
   const confirmPassword = computed(() => {
     return (userEdit.newPassword === userEdit.newPasswordCheck ? true : false)
   })
-
+  // 提交資料
   async function onSubmit() {
     try {
       for (let key in userEdit) {

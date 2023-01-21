@@ -1,7 +1,14 @@
 <template>
   <div class="text-center">
-    <button @click='clockIn' type="button" class="btn btn-primary fs-3 w-50 mb-3 me-3 shadow">Clock in</button>
-    <button @click="showQRmodal" type="button" class="btn btn-outline-info fs-3 mb-3 shadow">QR code</button>
+    <!-- 一鍵打卡 with tooltip -->
+    <button @click='clockIn' type="button" class="btn btn-primary fs-3 w-50 mb-3 me-3 shadow" v-tooltip
+      title="遠端工作者可一鍵打卡，一般使用者需離公司 400 公尺內才可打卡！" data-bs-toggle="tooltip" data-bs-placement="top"
+      data-bs-custom-class="custom-tooltip">
+      Clock in</button>
+      <!-- 產生 QRcode with tooltip -->
+    <button @click="showQRmodal" type="button" class="btn btn-outline-info fs-3 mb-3 shadow" v-tooltip
+      title="產生當日打卡 QRcode，注意！以一般相機掃描無效。" data-bs-toggle="tooltip" data-bs-placement="top"
+      data-bs-custom-class="custom-tooltip">QR code</button>
     <button v-if="currentUser.isAdmin" @click="showReaderModal" type="button"
       class="btn btn-outline-info fs-3 mb-3 mx-2 shadow">Reader</button>
   </div>
@@ -53,7 +60,7 @@
 <script setup>
   import { ref, reactive, onMounted } from 'vue'
   import attendanceAPI from './../apis/attendance'
-  import { Modal } from "bootstrap"
+  import { Modal, Tooltip } from "bootstrap"
   import { Toast, getPosition, onInit } from './../utils/helpers'
   import { day } from "../../day.js"
   import QrcodeVue from 'qrcode.vue'
@@ -70,24 +77,27 @@
   // QRcode modal
   let QRcodeModalRef = ref(null)
   let QRcodeModal = null
+  // 建立 Modal
   onMounted(() => {
     QRcodeModal = new Modal(QRcodeModalRef.value, {})
     readerModal = new Modal(readerModalRef.value, {})
+    tooltip = new Tooltip()
   })
   const showQRmodal = () => {
     QRcodeModal.show()
   }
   // QRcode value
-  const value = ref('')
+  const QRvalue = ref('')
   const clockInInfo = { user: { id: currentUser.value.id }, timeStamp: day().valueOf() }
   const encryptText = CryptoJS.AES.encrypt(JSON.stringify(clockInInfo), secret).toString()
-  value.value = encryptText
+  QRvalue.value = encryptText
 
   //// QRcode reader
   let offCamera = ref(false)
   let readerModalRef = ref(null)
   let readerModal = null
-  // 建立 modal show
+
+  // show reader modal & turn on camer
   const showReaderModal = () => {
     offCamera.value = true
     readerModal.show()
@@ -122,10 +132,12 @@
   let data = {}
   const clockIn = async () => {
     try {
+      // 不是遠端者要進行 GPS 驗證
       if (!currentUser.value.isRemote) {
         if (!navigator.geolocation) {
           return Toast.warning('抱歉！瀏覽器不支援存取您的位置')
         }
+        // 取得經緯度
         const position = await getPosition()
         const crd = position.coords
         data = {
@@ -134,6 +146,7 @@
           timeStamp: position.timestamp
         }
       } else {
+        // 遠端者直接取得時間戳打卡
         data = {
           timeStamp: day().valueOf()
         }

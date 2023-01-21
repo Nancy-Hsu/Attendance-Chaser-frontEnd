@@ -35,9 +35,11 @@
   const user = ref('')
   onBeforeMount(async () => {
     try {
+      // 取得使用者資料
       const response = await userAPI.getCurrentUser()
       user.value = response.data.currentUser
       const date = user.createdAt
+      // 處理入職日期
       const workStartDate = computed(date => {
         return dayjs(date).format('YYYY/MM/DD')
       })

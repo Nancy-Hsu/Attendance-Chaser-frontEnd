@@ -44,8 +44,9 @@ const router = createRouter({
   history: createWebHashHistory('/attendance-chaser'),
   routes
 })
-// 
+
 router.beforeEach(async (to, from, next) => {
+  // 加上換頁進度條
   NProgress.start()
   const store = userStore()
   const tokenStore = store.currentUser.token
@@ -55,7 +56,7 @@ router.beforeEach(async (to, from, next) => {
   if (tokenLocalStorage && tokenLocalStorage !== tokenStore) {
     isAuthenticated = await store.getCurrentUser()
   }
-
+  // 沒有登入不可以查看主頁
   if (!isAuthenticated && to.name !== 'login') {
     next('/login')
     Toast.warning('請先登入')

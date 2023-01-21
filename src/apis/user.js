@@ -1,12 +1,14 @@
 import { apiHelper } from '../utils/helpers'
 
 export default {
+  // 使用者修改密碼
   putUser({ userId, formData }) {
     return apiHelper.put(`/api/users/${userId}/`, formData)
   },
   getUser({ userId }) {
     return apiHelper.get(`/api/users/${userId}`, formData)
   },
+  // 取得當下使用者
   getCurrentUser() {
     return apiHelper.get(`/api/currentUser/`)
   },

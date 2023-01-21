@@ -22,6 +22,7 @@
         <td>{{date.endTime}}</td>
         <td>{{date.description}}</td>
       </tr>
+      <!-- 沒有行事曆的話 -->
       <td colspan="4" v-else class="text-center">
         目前沒有資料
       </td>
@@ -55,10 +56,10 @@
       const currentUserId = currentUser.value.id
       const year = day().year()
       const month = day().month() + 1
-
+      // 取得行事曆，帶入當年當月資料
       let attendedDate = await userAPI.getUserAttended({ userId: currentUserId, year, month })
       attendedDate = attendedDate.data.attendedDate
-
+      // 整理時間格式
       const filteredTime = computed(() => attendedDate.map(item => {
         let { startTime, endTime } = item.Attendances
         startTime = startTime ? day(startTime).format('HH:mm') : ''

@@ -19,6 +19,7 @@
         <td>{{absence.startTime}}</td>
         <td>{{absence.endTime}}</td>
       </tr>
+      <!-- 沒有資料時 -->
       <td colspan="4" v-else class="text-center fs-5 p-2">
         目前沒有異常資料
       </td>
@@ -40,7 +41,7 @@
   onBeforeMount(async () => {
     try {
       const currentUserId = currentUser.value.id
-
+      // 取得異常資料
       let absenceList = await userAPI.getUserAbsence({ userId: currentUserId })
       absenceList = absenceList.data.absenceData
       // 沒有異常則返回
@@ -48,6 +49,7 @@
         absences.value = false
         return
       }
+      // 整理時間格式
       const formattedTime = computed(() => absenceList.map(item => {
         let { startTime, endTime } = item.Attendances
         startTime = startTime ? day(startTime).format('HH:mm') : '未打卡'
