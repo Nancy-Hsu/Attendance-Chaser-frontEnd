@@ -1,5 +1,5 @@
 # Attendance-Chaser
-![圖片](https://user-images.githubusercontent.com/108853120/211469490-61398bb5-5a02-432d-b96f-0f2875b3ef3a.png)
+![圖片](https://user-images.githubusercontent.com/108853120/214905060-c538bee8-b65b-48ad-903f-567ac493de96.png)
 
 - 由此進入 [demo](https://nancy-hsu.github.io/Attendance-Chaser-frontEnd/#/login) 頁面
 - 遠端帳號： 000006，密碼： titaner ( 設定為遠端工作，可直接打卡 )
