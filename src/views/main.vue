@@ -1,14 +1,15 @@
 <template>
-  <div class="container py-5">
+  <div class="container py-3">
     <div class="row">
-      <div class="col-md-5">
-        <clockIn></clockIn>
+      <div class="col-md-4">
+        <!-- 監聽子元件是否打卡成功 -->
+        <clockIn @getCalenderData="getCalenderData"></clockIn>
         <!-- 個人資料 -->
-        <userProfile :user="user"></userProfile>
+        <userProfile></userProfile>
       </div>
-      <div class="col-md-6">
+      <div class="col-md-8">
         <!-- 行事曆 -->
-        <attendedList :attended="attended"></attendedList>
+        <attendedList></attendedList>
       </div>
     </div>
   </div>
@@ -18,4 +19,67 @@
   import userProfile from "../components/userProfile.vue"
   import clockIn from "../components/clockIn.vue"
   import attendedList from "../components/attendedList.vue"
+  import { ref, reactive, provide } from 'vue'
+  import userAPI from './../apis/user'
+  import { Toast } from './../utils/helpers'
+  import { day } from './../../day.js'
+  import { storeToRefs } from 'pinia'
+  import { userStore } from "../store/index.js"
+  import { v4 as uuidv4 } from 'uuid'
+  const store = userStore()
+  const { currentUser } = storeToRefs(store)
+
+  // 取得行事曆項目以及打卡時間
+  let events = ref([])
+  const getCalenderData = async () => {
+    try {
+      const eventsArray = []
+      const currentUserId = currentUser.value.id
+      const year = day().year()
+      const month = day().month() + 1
+      // 打API，帶入當年當月資料
+      let attendedDate = await userAPI.getUserAttended({ userId: currentUserId, year, month })
+      attendedDate = attendedDate.data.attendedDate
+      // 整理成行事曆用的event object
+      attendedDate.forEach(item => {
+        // 休假日提示
+        if (item.isHoliday) {
+          eventsArray.push({
+            id: uuidv4(),
+            title: item.description || '休假',
+            time: { start: item.date, end: item.date },
+            color: "red",
+            isEditable: false
+          })
+        }
+        // 顯示上班時間
+        if (item.Attendances.startTime) {
+          eventsArray.push({
+            id: uuidv4(),
+            title: "上班",
+            time: { start: day(item.Attendances.startTime).format("YYYY-MM-DD HH:mm"), end: day(item.Attendances.startTime).format("YYYY-MM-DD HH:mm") },
+            color: "green",
+            isEditable: false
+          })
+        }
+        // 顯示下班時間
+        if (item.Attendances.endTime) {
+          eventsArray.push({
+            id: uuidv4(),
+            title: "下班",
+            time: { start: `${item.date} ${day(item.Attendances.endTime).format("HH:mm")}`, end: `${item.date} ${day(item.Attendances.endTime).format("HH:mm")}` },
+            color: "green",
+            isEditable: false
+          })
+        }
+      })
+      events.value = eventsArray
+    } catch (error) {
+      Toast.error(error.response?.data?.message || error.message)
+    }
+  }
+  // 渲染行事曆 + 傳遞
+  getCalenderData()
+  provide('events', events)
+
 </script>

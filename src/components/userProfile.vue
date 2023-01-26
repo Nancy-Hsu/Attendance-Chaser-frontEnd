@@ -57,8 +57,8 @@
   .userDetails {
 
     &--avater {
-      width: 35vh;
-      height: 35vh;
+      width: 20vw;
+      height: 20vw;
       border-radius: 50%;
       object-fit: cover;
     }

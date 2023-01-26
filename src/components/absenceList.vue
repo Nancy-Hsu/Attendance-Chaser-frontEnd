@@ -2,7 +2,7 @@
   <h2 class="fw-bold ms-2">
     出勤異常
   </h2>
-  <h5 class="p-2">將顯示近兩個月的打卡異常</h5>
+  <h5 class="p-2">將顯示近兩個月的打卡異常 ( 不算休假日 )</h5>
   <table class="table table-hover table-primary m-2 text-center shadow">
     <thead>
       <tr>

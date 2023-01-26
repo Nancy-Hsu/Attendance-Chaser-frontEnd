@@ -5,12 +5,12 @@
       title="遠端工作者可一鍵打卡，一般使用者需離公司 400 公尺內才可打卡！" data-bs-toggle="tooltip" data-bs-placement="top"
       data-bs-custom-class="custom-tooltip">
       Clock in</button>
-      <!-- 產生 QRcode with tooltip -->
-    <button @click="showQRmodal" type="button" class="btn btn-outline-info fs-3 mb-3 shadow" v-tooltip
+    <!-- 產生 QRcode with tooltip -->
+    <button @click="showQRmodal" type="button" class="btn btn-outline-info fs-3 mb-3 shadow"
       title="產生當日打卡 QRcode，注意！以一般相機掃描無效。" data-bs-toggle="tooltip" data-bs-placement="top"
-      data-bs-custom-class="custom-tooltip">QR code</button>
+      data-bs-custom-class="custom-tooltip"><font-awesome-icon icon="qrcode" /> </button>
     <button v-if="currentUser.isAdmin" @click="showReaderModal" type="button"
-      class="btn btn-outline-info fs-3 mb-3 mx-2 shadow">Reader</button>
+      class="btn btn-outline-info fs-3 mb-3 mx-2 shadow"> <font-awesome-icon icon="camera" /> </button>
   </div>
 
   <!-- qrCode Modal -->
@@ -20,10 +20,9 @@
       <div class="modal-content">
         <div class="modal-header">
           <h3 class="modal-title fw-bold text-center" id="exampleModalLabel">您的 QRcode ( 限當日有效 )</h3>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body text-center">
-          <qrcode-vue :value="value" size="150"></qrcode-vue>
+          <qrcode-vue :value="QRvalue" size="150"></qrcode-vue>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
@@ -40,11 +39,12 @@
       <div class="modal-content">
         <div class="modal-header">
           <h3 class="modal-title fw-bold " id="exampleModalLabel">請掃 QRcode，按 Close 來關閉相機</h3>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body text-center">
-
           <qrcode-stream v-if="offCamera" :key="_uid" @init="onInit" @decode="onDecode">
+            <div class="loading-indicator" v-if="loading">
+              Loading...
+            </div>
           </qrcode-stream>
         </div>
         <div class="modal-footer">
@@ -58,17 +58,16 @@
 </template>
 
 <script setup>
-  import { ref, reactive, onMounted } from 'vue'
+  import { ref, reactive, onMounted, defineEmits } from 'vue'
   import attendanceAPI from './../apis/attendance'
   import { Modal, Tooltip } from "bootstrap"
-  import { Toast, getPosition, onInit } from './../utils/helpers'
+  import { Toast, getPosition } from './../utils/helpers'
   import { day } from "../../day.js"
   import QrcodeVue from 'qrcode.vue'
   import { QrcodeStream } from "vue-qrcode-reader"
   import CryptoJS from 'crypto-js'
   import { storeToRefs } from 'pinia'
   import { userStore } from "../store/index.js"
-  import bus from 'vue3-eventbus'
 
   const store = userStore()
   const { currentUser } = storeToRefs(store)
@@ -81,12 +80,11 @@
   onMounted(() => {
     QRcodeModal = new Modal(QRcodeModalRef.value, {})
     readerModal = new Modal(readerModalRef.value, {})
-    tooltip = new Tooltip()
   })
   const showQRmodal = () => {
     QRcodeModal.show()
   }
-  // QRcode value
+  // set QRcode value
   const QRvalue = ref('')
   const clockInInfo = { user: { id: currentUser.value.id }, timeStamp: day().valueOf() }
   const encryptText = CryptoJS.AES.encrypt(JSON.stringify(clockInInfo), secret).toString()
@@ -96,13 +94,38 @@
   let offCamera = ref(false)
   let readerModalRef = ref(null)
   let readerModal = null
+  let loading = ref(true)
 
   // show reader modal & turn on camer
   const showReaderModal = () => {
     offCamera.value = true
     readerModal.show()
   }
-  //解碼
+
+  // QRcode camera
+  const onInit = async (promise) => {
+    try {
+      loading.value = true
+      const { capabilities } = await promise;
+      // successfully initialized
+    } catch (error) {
+      if (error.name === "NotAllowedError") {
+        Toast.error('請同意開啟您的相機')
+      } else if (error.name === "NotFoundError") {
+        Toast.error('找不到可用相機')
+      } else if (error.name === "NotSupportedError") {
+        Toast.error('page is not served over HTTPS')
+      } else if (error.name === "NotReadableError") {
+        Toast.error('您的相機正在使用')
+      } else if (error.name === "StreamApiNotSupportedError") {
+        Toast.error('瀏覽器似乎不支援')
+      }
+    } finally {
+      // hide loading indicator
+      loading.value = false
+    }
+  }
+  // QRcode reader 解碼
   async function onDecode(decodedString) {
     try {
       // 不是 admin 退出
@@ -129,6 +152,7 @@
   }
 
   //一鍵打卡
+  const emit = defineEmits(['clockInSuccess'])
   let data = {}
   const clockIn = async () => {
     try {
@@ -153,7 +177,9 @@
       }
       //進行打卡
       const clockin = await attendanceAPI.postAttendance({ data })
-      bus.emit('clockIn')
+      // 向 mian.vue 傳遞打卡成功，並渲染行事曆
+      emit('getCalenderData')
+
       Toast.success(`${day(data.timeStamp).format('HH:mm')} ${clockin.data.msg}`)
     } catch (error) {
       Toast.error(error?.response?.data?.message || error.message)

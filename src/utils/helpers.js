@@ -65,24 +65,3 @@ export const getPosition = () => {
   })
 }
 
-// QRcode reader
-export const onInit = async (promise) => {
-  try {
-    const { capabilities } = await promise;
-    // successfully initialized
-  } catch (error) {
-    if (error.name === "NotAllowedError") {
-      Toast.error('請同意開啟您的相機')
-    } else if (error.name === "NotFoundError") {
-      Toast.error('找不到可用相機')
-    } else if (error.name === "NotSupportedError") {
-      Toast.error('page is not served over HTTPS')
-    } else if (error.name === "NotReadableError") {
-      Toast.error('您的相機正在使用')
-    }  else if (error.name === "StreamApiNotSupportedError") {
-      Toast.error('瀏覽器似乎不支援')
-    }
-  } finally {
-    // hide loading indicator
-  }
-}
