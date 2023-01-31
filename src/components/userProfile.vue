@@ -19,18 +19,15 @@
         <li class="list-group-item fs-5">入職日： {{ user.createdAt }}</li>
       </ul>
     </div>
-
-
-
   </div>
 </template>
 
+
 <script setup>
-  import { ref, onBeforeMount } from 'vue'
+  import { ref, onBeforeMount, computed } from 'vue'
   import userAPI from './../apis/user'
   import { Toast } from './../utils/helpers'
   import dayjs from "dayjs"
-  import { computed } from 'vue'
 
   const user = ref('')
   onBeforeMount(async () => {

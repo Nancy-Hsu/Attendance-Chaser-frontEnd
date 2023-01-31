@@ -62,6 +62,12 @@ router.beforeEach(async (to, from, next) => {
     Toast.warning('請先登入')
     return
   }
+  // 登入後無法去登入頁
+  if (isAuthenticated && to.name == 'login') {
+    next('/main')
+    Toast.warning('您已登入')
+    return
+  }
   next()
 })
 

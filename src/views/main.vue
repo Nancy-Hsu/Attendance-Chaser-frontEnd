@@ -3,7 +3,8 @@
     <div class="row">
       <div class="col-md-4">
         <!-- 監聽子元件是否打卡成功 -->
-        <clockIn @getCalenderData="getCalenderData"></clockIn>
+        <clockIn @getCalenderData="getCalenderData">
+        </clockIn>
         <!-- 個人資料 -->
         <userProfile></userProfile>
       </div>
@@ -13,6 +14,7 @@
       </div>
     </div>
   </div>
+
 </template>
 
 <script setup>
@@ -29,7 +31,7 @@
   import { v4 as uuidv4 } from 'uuid'
   const store = userStore()
   const { currentUser } = storeToRefs(store)
-  
+
 
   // 取得行事曆項目以及打卡時間
   let events = ref([])
@@ -39,7 +41,7 @@
     const year = day().year()
     const month = day().month() + 1
     const nationalHoliday = `https://cdn.jsdelivr.net/gh/ruyut/TaiwanCalendar/data/${year}.json`
-    try {   
+    try {
       // 得到行事曆的休假日提示
       let { data } = await axios.get(nationalHoliday)
       data.forEach(holiday => {
@@ -72,10 +74,11 @@
         }
         // 顯示下班時間
         if (item.Attendances.endTime) {
+          const formattedTime = day(item.Attendances.endTime).format("HH:mm")
           eventsArray.push({
             id: uuidv4(),
             title: "下班",
-            time: { start: `${item.date} ${day(item.Attendances.endTime).format("HH:mm")}`, end: `${item.date} ${day(item.Attendances.endTime).format("HH:mm")}` },
+            time: { start: `${item.date} ${formattedTime}`, end: `${item.date} ${formattedTime}` },
             color: "green",
             isEditable: false
           })
