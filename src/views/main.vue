@@ -19,6 +19,7 @@
   import userProfile from "../components/userProfile.vue"
   import clockIn from "../components/clockIn.vue"
   import attendedList from "../components/attendedList.vue"
+  import axios from 'axios'
   import { ref, reactive, provide } from 'vue'
   import userAPI from './../apis/user'
   import { Toast } from './../utils/helpers'
@@ -28,36 +29,43 @@
   import { v4 as uuidv4 } from 'uuid'
   const store = userStore()
   const { currentUser } = storeToRefs(store)
+  
 
   // 取得行事曆項目以及打卡時間
   let events = ref([])
   const getCalenderData = async () => {
-    try {
-      const eventsArray = []
-      const currentUserId = currentUser.value.id
-      const year = day().year()
-      const month = day().month() + 1
+    const eventsArray = []
+    const currentUserId = currentUser.value.id
+    const year = day().year()
+    const month = day().month() + 1
+    const nationalHoliday = `https://cdn.jsdelivr.net/gh/ruyut/TaiwanCalendar/data/${year}.json`
+    try {   
+      // 得到行事曆的休假日提示
+      let { data } = await axios.get(nationalHoliday)
+      data.forEach(holiday => {
+        if (holiday.isHoliday) {
+          const formattedDate = day(holiday.date).format('YYYY-MM-DD')
+          eventsArray.push({
+            id: uuidv4(),
+            title: holiday.description || '休假',
+            time: { start: formattedDate, end: formattedDate },
+            color: "red",
+            isEditable: false
+          })
+        }
+      })
       // 打API，帶入當年當月資料
       let attendedDate = await userAPI.getUserAttended({ userId: currentUserId, year, month })
       attendedDate = attendedDate.data.attendedDate
       // 整理成行事曆用的event object
       attendedDate.forEach(item => {
-        // 休假日提示
-        if (item.isHoliday) {
-          eventsArray.push({
-            id: uuidv4(),
-            title: item.description || '休假',
-            time: { start: item.date, end: item.date },
-            color: "red",
-            isEditable: false
-          })
-        }
         // 顯示上班時間
         if (item.Attendances.startTime) {
+          const formattedDate = day(item.Attendances.startTime).format("YYYY-MM-DD HH:mm")
           eventsArray.push({
             id: uuidv4(),
             title: "上班",
-            time: { start: day(item.Attendances.startTime).format("YYYY-MM-DD HH:mm"), end: day(item.Attendances.startTime).format("YYYY-MM-DD HH:mm") },
+            time: { start: formattedDate, end: formattedDate },
             color: "green",
             isEditable: false
           })
